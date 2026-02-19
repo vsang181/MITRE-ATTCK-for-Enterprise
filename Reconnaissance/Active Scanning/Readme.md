@@ -55,8 +55,8 @@ Employ **deep packet inspection (DPI)** and protocol analysis to identify extran
 
 ## Sub-Techniques
 
-| Sub-Technique | ID | Description |
-|---|---|---|
-| [Scanning IP Blocks](https://github.com/vsang181/MITRE-ATTCK-for-Enterprise/blob/main/Reconnaissance/Active%20Scanning/Scanning%20IP%20Blocks.md) | T1595.001 | Systematic probing of IP address ranges to enumerate live hosts and map network topology |
-| [Vulnerability Scanning](https://github.com/vsang181/MITRE-ATTCK-for-Enterprise/blob/main/Reconnaissance/Active%20Scanning/Vulnerability%20Scanning.md) | T1595.002 | Automated probing of services to identify known vulnerabilities using tools such as [Nessus](https://www.tenable.com/products/nessus), [OpenVAS](https://www.openvas.org/), or [Nikto](https://cirt.net/Nikto2) |
-| [Wordlist Scanning](https://github.com/vsang181/MITRE-ATTCK-for-Enterprise/blob/main/Reconnaissance/Active%20Scanning/Wordlist%20Scanning.md) | T1595.003 | Directory and resource enumeration against web servers using predefined wordlists, commonly executed via tools such as [Gobuster](https://github.com/OJ/gobuster), [ffuf](https://github.com/ffuf/ffuf), or [Dirbuster](https://www.kali.org/tools/dirbuster/) |
+| Sub-Technique | Description |
+|---|---|
+| [Scanning IP Blocks](https://github.com/vsang181/MITRE-ATTCK-for-Enterprise/blob/main/Reconnaissance/Active%20Scanning/Scanning%20IP%20Blocks.md) | Systematic probing of IP address ranges to enumerate live hosts and map network topology |
+| [Vulnerability Scanning](https://github.com/vsang181/MITRE-ATTCK-for-Enterprise/blob/main/Reconnaissance/Active%20Scanning/Vulnerability%20Scanning.md) | Automated probing of services to identify known vulnerabilities using tools such as [Nessus](https://www.tenable.com/products/nessus), [OpenVAS](https://www.openvas.org/), or [Nikto](https://cirt.net/Nikto2) |
+| [Wordlist Scanning](https://github.com/vsang181/MITRE-ATTCK-for-Enterprise/blob/main/Reconnaissance/Active%20Scanning/Wordlist%20Scanning.md) | Directory and resource enumeration against web servers using predefined wordlists, commonly executed via tools such as [Gobuster](https://github.com/OJ/gobuster), [ffuf](https://github.com/ffuf/ffuf), or [Dirbuster](https://www.kali.org/tools/dirbuster/) |
