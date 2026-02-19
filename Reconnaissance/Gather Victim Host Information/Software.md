@@ -1,0 +1,54 @@
+# Software
+
+Software reconnaissance is a sub-technique of Gather Victim Host Information (**MITRE ATT&CK T1592.002**) in which adversaries collect detailed intelligence about the software environment of target hosts. This includes enumerating installed applications, operating system versions, running services, middleware components, and the presence of defensive security tooling such as antivirus solutions, **Endpoint Detection and Response (EDR)** agents, **Security Information and Event Management (SIEM)** platforms, and **Data Loss Prevention (DLP)** software. The identification of specific software versions enables adversaries to cross-reference findings against public vulnerability databases such as the **National Vulnerability Database (NVD)** and [Exploit-DB](https://www.exploit-db.com/) to identify actionable **Common Vulnerabilities and Exposures (CVEs)** applicable to the target environment, directly informing subsequent exploitation activity.
+
+A technically significant and increasingly exploited collection vector within this sub-technique involves **document metadata analysis**. Files publicly hosted on victim-owned websites, including PDFs, Microsoft Office documents, images, and audio files, frequently contain embedded metadata that discloses the software application, version number, operating system, and author information used to create or process the file. Tools such as [ExifTool](https://exiftool.org/), [FOCA (Fingerprinting Organisations with Collected Archives)](https://github.com/ElevenPaths/FOCA), and [Metagoofil](https://github.com/laramies/metagoofil) can automate the extraction and analysis of this metadata at scale, enabling adversaries to build a detailed software inventory of the target organisation from entirely passive collection methods. Gathered software intelligence can further inform reconnaissance (e.g., **T1593 – Search Open Websites/Domains**, **T1596 – Search Open Technical Databases**), capability development (e.g., **T1587 – Develop Capabilities**, **T1588 – Obtain Capabilities**), and initial access operations (e.g., **T1195 – Supply Chain Compromise**, **T1133 – External Remote Services**).
+
+***
+
+## Procedure Examples
+
+### Andariel
+**Andariel** is a North Korean state-sponsored threat actor group operating as a sub-unit of the **Lazarus Group**, primarily targeting South Korean government, financial, and defence sector organisations. The group has been observed compromising legitimate websites and injecting malicious JavaScript into their page content, designed to silently collect software and system profile information from visiting users. Harvested data has included browser type and version, system language settings, installed plugin details such as **Adobe Flash Player** version, and other client-side configuration attributes, enabling Andariel to build victim profiles and serve targeted exploit payloads exclusively to hosts meeting desired criteria.
+
+### Magic Hound
+**Magic Hound** (also tracked as **APT35** or **Charming Kitten**) is an Iranian state-sponsored APT group attributed to the **Islamic Revolutionary Guard Corps (IRGC)**. The group has been observed capturing and logging **HTTP User-Agent strings** from visitors to adversary-controlled phishing infrastructure, extracting browser type, operating system version, and device architecture information to profile targets and optimise subsequent malware delivery and credential harvesting operations.
+
+### Sandworm Team
+**Sandworm Team** is a highly destructive Russian GRU-affiliated APT group responsible for some of the most damaging cyberattacks on record. In preparation for the **2017 NotPetya** attack, Sandworm Team conducted extensive software reconnaissance against the Ukrainian tax software platform **M.E.Doc**, researching its codebase and update delivery mechanism to enable a **software supply chain compromise** (**T1195.002**) that allowed NotPetya to be distributed to thousands of organisations via a trojanised software update. The group has additionally been observed compiling targeted lists of hosts running specific software versions as part of pre-operational scoping efforts.
+
+***
+
+## Collection Vectors
+
+Adversaries may gather software intelligence through a combination of active and passive collection methods:
+
+- **Active Scanning:** Interrogation of listening ports, service banners, and HTTP response headers to enumerate web server software (e.g., Apache, Nginx, IIS), application frameworks, CMS platforms (e.g., WordPress, Drupal), and middleware versions. Tools such as [Nmap](https://nmap.org/) with service version detection (`-sV`), [WhatWeb](https://github.com/urbanadventurer/WhatWeb), and [Wappalyzer](https://www.wappalyzer.com/) automate technology stack fingerprinting against internet-facing applications.
+- **User-Agent Harvesting:** Adversary-controlled phishing pages and watering hole infrastructure passively collect `User-Agent` header values from inbound HTTP requests, revealing browser vendor, version, rendering engine, and operating system details without any active probing of the target environment.
+- **Document Metadata Extraction:** Public-facing documents hosted on victim websites are downloaded and analysed using tools such as [ExifTool](https://exiftool.org/) and [FOCA](https://github.com/ElevenPaths/FOCA) to extract embedded software metadata including authoring application names and version numbers, which can be cross-referenced against known CVEs.
+- **JavaScript-Based Fingerprinting:** Malicious scripts embedded within compromised or adversary-controlled websites enumerate client-side software attributes including browser plugin inventory, JavaScript engine version, WebGL renderer strings, and installed font sets, collectively forming a detailed software fingerprint of the visiting host.
+- **OSINT from Public Data Sources:** Software stack information is frequently inadvertently disclosed through job postings specifying required technology experience, resumes and LinkedIn profiles listing software platforms, vendor case studies, and network assessment reports published or leaked online.
+
+***
+
+## Mitigations: Pre-Compromise (MITRE M1056)
+
+As with other host information gathering sub-techniques, software reconnaissance is conducted primarily from outside the target organisation's network perimeter and cannot be directly prevented through conventional enterprise controls. Mitigation efforts should focus on minimising the software intelligence available to adversaries:
+
+- **Strip document metadata before publication:** Implement a policy and automated process to remove embedded metadata from all documents prior to public hosting. Microsoft Office's built-in **Document Inspector**, **ExifTool**, and enterprise-grade **DLP solutions** such as [Forcepoint DLP](https://www.forcepoint.com/product/dlp-data-loss-prevention) or [Symantec DLP](https://www.broadcom.com/products/cybersecurity/information-protection/data-loss-prevention) can be used to automate metadata stripping from outbound files.
+- **Suppress software version disclosure:** Configure all public-facing web servers and application platforms to suppress version identifiers in HTTP response headers, error pages, and server banners. For example, set `ServerTokens Prod` in Apache, `server_tokens off` in Nginx, and remove the `X-Powered-By` and `X-AspNet-Version` headers from IIS responses.
+- **Implement web application firewalls (WAFs):** Deploy WAF solutions such as [Cloudflare WAF](https://www.cloudflare.com/en-gb/application-services/products/waf/), [AWS WAF](https://aws.amazon.com/waf/), or [F5 Advanced WAF](https://www.f5.com/products/security/advanced-waf) to filter requests and responses, and mask application-identifying information from inbound scanners and reconnaissance tooling.
+- **Restrict JavaScript execution surface:** Enforce strict **Content Security Policies (CSP)** on all web properties to limit the execution of unauthorised third-party scripts that may be used for client-side fingerprinting. Deploy **browser isolation** solutions such as [Cloudflare Browser Isolation](https://www.cloudflare.com/en-gb/zero-trust/products/browser-isolation/) for high-risk user populations to prevent JavaScript-based software enumeration.
+- **Proactive software inventory management:** Maintain a comprehensive and continuously updated software asset inventory using tools such as [Tenable.io](https://www.tenable.com/products/tenable-io) or [Qualys VMDR](https://www.qualys.com/apps/vulnerability-management-detection-response/), and proactively patch or decommission software components with known CVEs before adversaries can exploit them.
+
+***
+
+## Detection Strategy
+
+### Internet-Facing Content and Fingerprinting Detection
+
+Detection of software-focused reconnaissance presents significant challenges due to the high baseline volume of legitimate internet scanner traffic and the passive nature of many collection vectors. Internet-facing web servers and application gateways should forward all access logs, including HTTP request headers and User-Agent strings, to a centralised **SIEM platform** such as [Splunk](https://www.splunk.com/) or [Microsoft Sentinel](https://azure.microsoft.com/en-us/products/microsoft-sentinel) for correlation. Anomalous patterns such as high-frequency requests from automated scanning tools, unusual User-Agent strings associated with known fingerprinting utilities (e.g., `WhatWeb`, `Nmap Scripting Engine`), and bulk document download activity should be flagged for review. Network intrusion detection systems such as [Zeek](https://zeek.org/) and [Suricata](https://suricata.io/) can provide packet-level visibility into scanning tool signatures targeting application layer software enumeration.
+
+### Detection Pivot to Initial Access and Supply Chain Indicators
+
+Given the inherently limited visibility into pre-compromise software reconnaissance activity, detection efforts achieve the greatest operational value when redirected to the downstream phases at which harvested software intelligence is applied. Defenders should implement robust monitoring controls aligned with **Initial Access** indicators, with particular focus on exploitation attempts against specific software versions identified during scanning, anomalous software update delivery behaviour consistent with supply chain compromise, and suspicious inbound connections to services whose software versions have recently been publicly disclosed in CVE advisories. Threat intelligence enrichment via platforms such as [Recorded Future](https://www.recordedfuture.com/), [MISP](https://www.misp-project.org/), and [VirusTotal](https://www.virustotal.com/) can contextualise exploitation attempts against the known software vulnerability exploitation patterns of relevant threat actor groups.
