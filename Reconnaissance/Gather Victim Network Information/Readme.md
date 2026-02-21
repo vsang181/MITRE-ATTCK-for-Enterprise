@@ -1,5 +1,3 @@
-***
-
 # Gather Victim Network Information
 
 Gather Victim Network Information is a reconnaissance technique classified under **MITRE ATT&CK T1590** in which adversaries collect detailed intelligence about the network architecture, addressing schemes, and operational dependencies of a target organisation to support subsequent attack planning and execution.  Network-level intelligence encompasses both administrative data, such as allocated IP address ranges, registered domain names, and DNS record structures, as well as more granular operational details including network topology, routing configurations, deployed security appliances, inter-organisational trust relationships, and the identification of critical network infrastructure components. 
