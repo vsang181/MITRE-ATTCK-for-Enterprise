@@ -1,0 +1,58 @@
+# Search Closed Sources
+
+Search Closed Sources is a reconnaissance technique classified under **MITRE ATT&CK T1597** in which adversaries gather intelligence about target organisations and individuals from sources that are not freely accessible to the general public, including paid commercial databases, private intelligence feeds, and illicit dark web marketplaces.  The technique is operationally significant because closed data sources frequently offer substantially richer, more curated, and more actionable intelligence than freely available open sources — often aggregating data from multiple primary sources into searchable, queryable databases that enable rapid, large-scale victim profiling without requiring adversaries to conduct time-consuming manual OSINT collection. 
+Gathered intelligence can directly inform further reconnaissance (e.g., **T1598 – Phishing for Information**, **T1593 – Search Open Websites/Domains**), support resource development (e.g., **T1587 – Develop Capabilities**, **T1588 – Obtain Capabilities**), and enable initial access via **T1133 – External Remote Services** and **T1078 – Valid Accounts**, particularly where purchased data includes credential sets or session tokens valid against target systems. 
+
+***
+
+## The Closed Source Intelligence Spectrum
+
+The "closed sources" available to adversaries span a spectrum from entirely legitimate commercial services at one end to illicit dark web criminal marketplaces at the other, with adversaries exploiting both ends of this spectrum depending on the type of intelligence sought and the operational constraints under which they operate: 
+**Legitimate commercial and reputable private sources** are subscription-based data aggregation and intelligence platforms that legally compile and sell access to large datasets derived from public records, corporate filings, social media, professional networks, and technical data sources. These platforms are marketed to and used by legitimate business intelligence, sales, recruitment, and cybersecurity professionals, but are equally accessible to adversaries who purchase subscriptions under cover identities. The data they provide is accurate, frequently updated, and structured for rapid querying — making them highly efficient reconnaissance tools. 
+
+**Dark web and cybercrime marketplaces** sell data that has been obtained through illegal means, including credential sets harvested from prior data breaches, employee PII from corporate data breaches, stolen network access credentials, initial access broker listings, and technical infrastructure data.  This category of closed source intelligence is particularly operationally potent because it may contain credentials that are currently valid against target systems, providing immediate initial access opportunities without requiring any further social engineering or exploitation. 
+
+***
+
+## Procedure Examples
+
+### EXOTIC LILY
+**EXOTIC LILY** is a financially motivated initial access broker group that conducted large-scale spearphishing campaigns on behalf of ransomware and extortion-focused threat actors. The group specifically used commercial business intelligence databases — including **RocketReach** and **Crunchbase** — to search for and gather detailed information on targeted individuals within victim organisations.  RocketReach aggregates contact information including verified professional email addresses and direct phone numbers for millions of business professionals, while Crunchbase provides detailed corporate intelligence including funding history, key personnel, and business relationship data. EXOTIC LILY's use of these legitimate platforms demonstrates that closed source reconnaissance does not require dark web access — significant targeting intelligence is commercially available through standard subscription services marketed to sales and recruitment professionals. 
+
+***
+
+## Mitigations: Pre-Compromise
+
+Search Closed Sources reconnaissance operates entirely through adversary interactions with external data platforms, placing all collection activity outside the reach of enterprise defensive controls.  Mitigation efforts should focus on minimising the intelligence available within closed sources and on hardening the access pathways that purchased intelligence enables: [startupdefense](https://www.startupdefense.io/mitre-attack-techniques/t1597-search-closed-sources)
+
+- **Credential exposure monitoring:** Continuously monitor for the exposure of organisational credentials in data breach datasets using services such as [Have I Been Pwned](https://haveibeenpwned.com/) (enterprise API), [SpyCloud Enterprise](https://spycloud.com/), and [Entra ID Identity Protection](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id-protection), enabling rapid forced password resets for compromised credentials before they can be operationally exploited by adversaries purchasing breach data. 
+- **Dark web monitoring:** Engage managed threat intelligence services or deploy dark web monitoring platforms such as [Recorded Future](https://www.recordedfuture.com/), [Mandiant Digital Threat Monitoring](https://www.mandiant.com/), and [Cybersixgill](https://cybersixgill.com/) to continuously monitor dark web marketplaces and criminal forums for mentions of the organisation's name, domains, credentials, and infrastructure data being offered for sale.
+- **Minimise commercial data aggregator exposure:** Organisations can submit opt-out and data removal requests to major commercial data aggregation platforms that compile employee contact details, corporate directory data, and business intelligence, including [ZoomInfo](https://www.zoominfo.com/), [RocketReach](https://rocketreach.co/), and [Crunchbase](https://www.crunchbase.com/), reducing the richness of organisational intelligence available to adversaries through legitimate subscription channels.
+- **Phishing-resistant MFA deployment:** Since a primary operational use of purchased credential data is **T1078 – Valid Accounts** exploitation, deploying phishing-resistant **FIDO2/WebAuthn** MFA across all internet-facing authentication surfaces prevents purchased static credentials from enabling immediate account compromise, even where valid usernames and passwords have been acquired from breach databases. 
+- **Initial access broker threat intelligence monitoring:** Subscribe to threat intelligence services that monitor initial access broker (IAB) listings on dark web forums, providing early warning when adversaries are actively selling authenticated access to the organisation's network — enabling incident response engagement before the purchasing adversary can conduct follow-on operations. 
+
+***
+
+## Detection Strategy
+
+### Passive Collection Visibility Limitations
+Search Closed Sources reconnaissance generates no artefacts within the target organisation's infrastructure regardless of which data sources are queried, since collection occurs entirely within external databases and platforms.  Direct detection of this activity is therefore entirely infeasible through conventional perimeter and endpoint monitoring controls. 
+
+### Detection Pivot to Credential Compromise and Initial Access Indicators
+Detection resources yield maximum operational value when focused on the downstream indicators that purchased intelligence enables: 
+
+- **Anomalous authentication monitoring:** Monitor **Entra ID**, VPN, and application authentication logs for login attempts using valid credentials from unexpected geographic locations, previously unseen devices, or IP addresses associated with anonymising infrastructure (VPN, Tor exit nodes, hosting providers), consistent with adversaries using purchased credentials to attempt account compromise. Apply **Entra ID Identity Protection** risk-based conditional access to block or step up high-risk sign-in attempts. 
+- **Credential stuffing pattern detection:** Monitor authentication infrastructure for patterns of credential stuffing — high-volume authentication attempts across multiple accounts from single or rotating IP addresses — characteristic of adversaries validating bulk purchased credential sets against the organisation's authentication endpoints. 
+- **Dark web breach alert response:** Integrate dark web monitoring alerts into the incident response workflow, treating confirmed credential exposure in breach datasets as a **Potential Compromise Indicator** requiring immediate forced password resets, session invalidation, and enhanced monitoring for the exposed accounts, rather than as a low-priority informational alert. 
+
+***
+
+
+Here is the sub-techniques section reformatted as a table:
+
+## Sub-Techniques
+
+| Sub-Technique | ID | Data Sources Exploited | Intelligence Collected | Key Platforms and Examples | Mitigations and Detection Focus |
+|---|---|---|---|---|---|
+| **Threat Intel Vendors** | T1597.001 | Legitimate commercial threat intelligence subscription platforms and data aggregation services | Passive DNS and infrastructure history, historical subdomain and IP mappings, internet scan data exposing open ports and service banners, software version fingerprints, SSL/TLS certificate datasets, vulnerability intelligence feeds, IOC context and threat actor infrastructure mappings | [Shodan](https://www.shodan.io/), [Censys](https://censys.io/), [Recorded Future](https://www.recordedfuture.com/), [SecurityTrails](https://securitytrails.com/), [DomainTools](https://www.domaintools.com/), [GreyNoise Intelligence](https://www.greynoise.io/), [ANY.RUN Threat Intelligence Lookup](https://any.run/threat-intelligence-lookup/), [BinaryEdge](https://www.binaryedge.io/) | Suppress internet-facing infrastructure exposure by removing management interface banners and version details; conduct proactive external attack surface assessments using [Censys ASM](https://censys.io/) and [Microsoft Defender EASM](https://www.microsoft.com/en-us/security/business/endpoint-security/microsoft-defender-external-attack-surface-management); subscribe to vulnerability intelligence feeds to patch disclosed vulnerabilities before adversaries exploit intelligence purchased from the same sources |
+| **Purchase Technical Data** | T1597.002 | Dark web marketplaces, cybercrime forums, initial access broker listings, breach data aggregation services, and commercial corporate data platforms | Stolen credential sets from prior breaches; initial access broker listings selling authenticated VPN, RDP, and web shell access; corporate employee PII including email addresses and phone numbers; network scan and vulnerability data from private databases | [DeHashed](https://dehashed.com/), [Have I Been Pwned](https://haveibeenpwned.com/) (API), [RocketReach](https://rocketreach.co/) (as used by EXOTIC LILY), [Crunchbase](https://www.crunchbase.com/) (as used by EXOTIC LILY), dark web initial access broker forums | Continuously monitor credential exposure through [SpyCloud Enterprise](https://spycloud.com/) and [Entra ID Identity Protection](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id-protection); deploy dark web monitoring via [Recorded Future](https://www.recordedfuture.com/) and [Cybersixgill](https://cybersixgill.com/) for early warning of breach data and IAB listings; enforce phishing-resistant FIDO2/WebAuthn MFA to prevent purchased static credentials from enabling immediate account takeover; submit data removal requests to commercial aggregators including [ZoomInfo](https://www.zoominfo.com/) and [RocketReach](https://rocketreach.co/) |
