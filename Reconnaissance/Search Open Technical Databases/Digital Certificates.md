@@ -1,7 +1,3 @@
-Understood, Victor. Here is the Digital Certificates entry rewritten without citations:
-
-***
-
 # Digital Certificates
 
 Digital Certificates is a sub-technique of Search Open Technical Databases (**MITRE ATT&CK T1596.003**) in which adversaries query publicly accessible **Certificate Transparency (CT) logs** and digital certificate databases to gather intelligence about a target organisation's registered domains, subdomains, internal hostnames, and infrastructure relationships. Digital certificates are a uniquely high-value open reconnaissance source because every organisation deploying HTTPS must obtain a certificate from a trusted Certificate Authority (CA) — and since 2013, all publicly trusted CAs are required to log every certificate they issue to publicly accessible CT logs, creating a permanent, queryable, and authoritative record of every certificate ever issued for any domain.
